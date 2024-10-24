@@ -1,17 +1,31 @@
-<div class="container mt-5" *ngIf="user">
-    <h2>Detalhes do Usuário: {{ user.nomeCompleto }}</h2>
-    <p><strong>Sexo:</strong> {{ user.sexo }}</p>
-    <p><strong>Idade:</strong> {{ user.idade }}</p>
-    <p><strong>Peso:</strong> {{ user.peso }} kg</p>
+<div class="user-info">
+    <h1>Usuários</h1>
+    <ul>
+        <li *ngFor="let user of users" (click)="loadTreinos(user.id)">
+            {{ user.nomeCompleto }}
+        </li>
+    </ul>
 
-    <h4>Treinos Registrados:</h4>
-    <div *ngFor="let treino of treinoUser">
-        <h5>{{ treino.nome }}</h5>
+    <div *ngIf="selectedUser">
+        <h3>Treinos de {{ selectedUser.nomeCompleto }}:</h3>
         <ul>
-            <li *ngFor="let exercise of treino.exercicios">
-                <strong>{{ exercise.nome }}</strong>: {{ exercise.carga }} kg,
-                {{ exercise.series }} séries, {{ exercise.tempo }}s, descanso: {{ exercise.descanso }}s
+            <li *ngFor="let treino of treinos" (click)="loadExercicios(treino.id)">
+                {{ treino.nome }}
             </li>
         </ul>
+
+        <h3>Exercícios:</h3>
+        <div *ngIf="exercicios.length > 0">
+            <ul>
+                <li *ngFor="let exercicio of exercicios">
+                    {{ exercicio.nome }} - {{ exercicio.series }} séries de {{ exercicio.repeticoes }} repetições
+                    <br>
+                    Carga: {{ exercicio.carga }} kg, Tempo: {{ exercicio.tempo }}s, Descanso: {{ exercicio.descanso }}s
+                </li>
+            </ul>
+        </div>
+        <div *ngIf="exercicios.length === 0">
+            <p>Nenhum exercício encontrado para este treino.</p>
+        </div>
     </div>
 </div>

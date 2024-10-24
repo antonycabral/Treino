@@ -5,6 +5,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -19,10 +21,17 @@ public class Exercicio {
     private double carga;
     private int series;
     private int tempo; // em segundos
-    private int descanso; // em segundos
+    private int descanso;// em segundos
+    private int repeticoes;
+
+    @ManyToOne
+    @JoinColumn(name = "treino_id") // nome da coluna que relaciona com Treino
+    private Treino treino;
 
     public Exercicio() {
     }
+
+    
 
     public Long getId() {
         return id;
@@ -71,5 +80,26 @@ public class Exercicio {
     public void setDescanso(int descanso) {
         this.descanso = descanso;
     }
+
+    public Treino getTreino() {
+        return treino;
+    }
+
+    public void setTreino(Treino treino) {
+        this.treino = treino;
+    }
+
+
+
+    public int getRepeticoes() {
+        return repeticoes;
+    }
+
+
+
+    public void setRepeticoes(int repeticoes) {
+        this.repeticoes = repeticoes;
+    }
+
 
 }

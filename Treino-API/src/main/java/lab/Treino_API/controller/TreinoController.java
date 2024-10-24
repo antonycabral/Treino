@@ -14,7 +14,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import lab.Treino_API.Service.ExercicioService;
 import lab.Treino_API.Service.TreinoService;
+import lab.Treino_API.domain.model.Exercicio;
 import lab.Treino_API.domain.model.Treino;
 
 
@@ -23,6 +25,9 @@ import lab.Treino_API.domain.model.Treino;
 public class TreinoController {
     @Autowired
     private TreinoService treinoService;
+
+    @Autowired
+    private ExercicioService exercicioService;
 
     @GetMapping
     public ResponseEntity<List<Treino>> todosTreinos() {
@@ -49,7 +54,14 @@ public class TreinoController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    
+    @GetMapping("/{id}/exercicios")
+    public ResponseEntity<List<Exercicio>> exerciciosPorTreinoId(@PathVariable Long id) {
+        List<Exercicio> exercicios = exercicioService.findByTreinoId(id);
+        if (exercicios.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } else {
+            return new ResponseEntity<>(exercicios, HttpStatus.OK);
+        }
+    }
 
-    
 }

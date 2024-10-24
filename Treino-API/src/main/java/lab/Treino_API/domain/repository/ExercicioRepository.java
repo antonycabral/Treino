@@ -5,8 +5,9 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import lab.Treino_API.domain.model.Exercicio;
+import lab.Treino_API.domain.model.Treino;
 
 public interface ExercicioRepository extends JpaRepository<Exercicio, Long> {
-    List<Exercicio> findByNomeContainingIgnoreCase(String nome);
-    List<Exercicio> findByTreinoId(long treinoId);
+    List<Exercicio> findByTreino(Treino treino);
+    List<Exercicio> findByTreinoId(Long treinoId);
 }

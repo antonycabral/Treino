@@ -31,11 +31,8 @@ public class ExercicioService {
         exercicioRepository.deleteById(id);
     }
 
-    public List<Exercicio> findByNome(String nome) {
-        return exercicioRepository.findByNomeContainingIgnoreCase(nome);
+    public List<Exercicio> findByTreinoId(Long treinoId) {
+        return exercicioRepository.findByTreinoId(treinoId); // Chame o método do repositório
     }
 
-    public List<Exercicio> findByTreinoId(long treinoId) {
-        return exercicioRepository.findByTreinoId(treinoId);
-    }
 }

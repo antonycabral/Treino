@@ -3,8 +3,9 @@ import { User } from '../../model/User';
 import { HttpClientModule } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Treino } from '../../model/Treino';
 import { Router } from '@angular/router';
+import { UserService } from '../../services/user.service';
+import { CommunicationService } from '../../services/communication.service';
 
 
 
@@ -12,25 +13,32 @@ import { Router } from '@angular/router';
   selector: 'app-home',
   standalone: true,
   imports: [HttpClientModule, CommonModule,FormsModule],
+  providers:[UserService],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css'
 })
 export class HomeComponent implements OnInit {
   users: User[] = [];
 
-  constructor(private router: Router) {} // Injetar Router
+    constructor(
+        private userService: UserService,
+        private communicationService: CommunicationService,
+        private router: Router
+    ) {}
 
-  ngOnInit(): void {
-    // Simulação de usuários
-    this.users = [
-      { id: 1, nomeCompleto: 'Usuário A', sexo: 'Masculino', idade: 25, peso: 70 },
-      { id: 2, nomeCompleto: 'Usuário B', sexo: 'Feminino', idade: 30, peso: 60 },
-      { id: 3, nomeCompleto: 'Usuário C', sexo: 'Masculino', idade: 22, peso: 80 }
-    ];
-  }
+    ngOnInit(): void {
+        this.userService.getUsers().subscribe(
+            (data: User[]) => {
+                this.users = data;
+            },
+            error => {
+                console.error('Erro ao carregar usuários', error);
+            }
+        );
+    }
 
-  // Método para redirecionar para o UserComponent
-  selectUser(userId: number): void {
-    this.router.navigate(['/user', userId]); // Navega para a rota do usuário
-  }
+    selectUser(userId: number): void {
+        this.communicationService.changeUserId(userId);
+        this.router.navigate(['/user', userId]);
+    }
 }

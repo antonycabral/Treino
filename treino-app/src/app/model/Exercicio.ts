@@ -1,7 +1,10 @@
 export interface Exercicio {
+    id: number;
     nome: string;
-    carga: number; // Carga em kg
-    series: number; // Número de séries
-    tempo: number; // Tempo em segundos
-    descanso: number; // Tempo de descanso em segundos
+    carga: number;
+    series: number;
+    tempo: number; // em segundos
+    descanso: number; // em segundos
+    repeticoes: number; // nova propriedade
+    treinoId: number; // ID do treino ao qual este exercício pertence
 }
