@@ -15,24 +15,26 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "tb_treino")
 public class Treino {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String tipo;
-    
+
+    private String nome;
+
     @ManyToOne
-    @JoinColumn(name = "usuario_id")
+    @JoinColumn(name = "usuario_id", nullable = false)
     private Usuario usuario;
-    
-    @OneToMany(mappedBy = "treino", cascade = CascadeType.ALL)
+
+    @OneToMany(cascade = CascadeType.ALL)
     private List<Exercicio> exercicios;
 
     public Treino() {
     }
 
-    public Treino(Long id, String tipo, Usuario usuario, List<Exercicio> exercicios) {
+    public Treino(Long id, String nome, Usuario usuario, List<Exercicio> exercicios) {
         this.id = id;
-        this.tipo = tipo;
+        this.nome = nome;
         this.usuario = usuario;
         this.exercicios = exercicios;
     }
@@ -45,12 +47,12 @@ public class Treino {
         this.id = id;
     }
 
-    public String getTipo() {
-        return tipo;
+    public String getNome() {
+        return nome;
     }
 
-    public void setTipo(String tipo) {
-        this.tipo = tipo;
+    public void setNome(String nome) {
+        this.nome = nome;
     }
 
     public Usuario getUsuario() {
@@ -68,5 +70,6 @@ public class Treino {
     public void setExercicios(List<Exercicio> exercicios) {
         this.exercicios = exercicios;
     }
+
 
 }

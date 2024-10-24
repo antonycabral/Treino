@@ -31,7 +31,7 @@ public class TreinoService {
         treinoRepository.deleteById(id);
     }
 
-    public List<Treino> findByTipo(String tipo) {
-        return treinoRepository.findByTipoContainingIgnoreCase(tipo);
+    public List<Treino> findByUsuarioId(Long usuarioId) {
+        return treinoRepository.findByUsuarioId(usuarioId);
     }
 }

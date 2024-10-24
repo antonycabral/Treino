@@ -1,1 +1,17 @@
-<p>user works!</p>
+<div class="container mt-5" *ngIf="user">
+    <h2>Detalhes do Usuário: {{ user.nomeCompleto }}</h2>
+    <p><strong>Sexo:</strong> {{ user.sexo }}</p>
+    <p><strong>Idade:</strong> {{ user.idade }}</p>
+    <p><strong>Peso:</strong> {{ user.peso }} kg</p>
+
+    <h4>Treinos Registrados:</h4>
+    <div *ngFor="let treino of treinoUser">
+        <h5>{{ treino.nome }}</h5>
+        <ul>
+            <li *ngFor="let exercise of treino.exercicios">
+                <strong>{{ exercise.nome }}</strong>: {{ exercise.carga }} kg,
+                {{ exercise.series }} séries, {{ exercise.tempo }}s, descanso: {{ exercise.descanso }}s
+            </li>
+        </ul>
+    </div>
+</div>

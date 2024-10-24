@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -29,6 +28,12 @@ public class ExercicioController {
     @GetMapping
     public ResponseEntity<List<Exercicio>> todosExercicios() {
         List<Exercicio> exercicios = exercicioService.findAll();
+        return new ResponseEntity<>(exercicios, HttpStatus.OK);
+    }
+    
+    @GetMapping("/porTreino/{treinoId}")
+    public ResponseEntity<List<Exercicio>> exerciciosPorTreino(@PathVariable long treinoId) {
+        List<Exercicio> exercicios = exercicioService.findByTreinoId(treinoId);
         return new ResponseEntity<>(exercicios, HttpStatus.OK);
     }
 
@@ -54,26 +59,7 @@ public class ExercicioController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Exercicio> atualizarExercicio(@PathVariable Long id, @RequestBody Exercicio exercicio) {
-        Optional<Exercicio> exercicioExiste = exercicioService.findById(id);
-        if (exercicioExiste.isPresent()) {
-            Exercicio exercicioAtualizado = exercicioExiste.get();
-            exercicioAtualizado.setNome(exercicio.getNome());
-            exercicioAtualizado.setSeries(exercicio.getSeries());
-            exercicioAtualizado.setRepeticoes(exercicio.getRepeticoes());
-            exercicioAtualizado.setCarga(exercicio.getCarga());
-            exercicioAtualizado.setDescanso(exercicio.getDescanso());
-            exercicioAtualizado.setEnergia(exercicio.getEnergia());
-            exercicioAtualizado.setTreino(exercicio.getTreino());
-            exercicioAtualizado.setCategoria(exercicio.getCategoria());
-            Exercicio atualizado = exercicioService.save(exercicioAtualizado);
-            return new ResponseEntity<>(atualizado, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-    }
-
+    
     @GetMapping("/buscarPorNome")
     public ResponseEntity<List<Exercicio>> buscarPorNome(@RequestParam String nome) {
         List<Exercicio> exercicios = exercicioService.findByNome(nome);

@@ -31,7 +31,4 @@ public class UsuarioService {
         usuarioRepository.deleteById(id);
     }
 
-    public List<Usuario> findByNome(String nome){
-        return usuarioRepository.findByNomeCompleto(nome);
-    }
 }

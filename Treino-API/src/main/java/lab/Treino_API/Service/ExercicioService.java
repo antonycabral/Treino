@@ -34,4 +34,8 @@ public class ExercicioService {
     public List<Exercicio> findByNome(String nome) {
         return exercicioRepository.findByNomeContainingIgnoreCase(nome);
     }
+
+    public List<Exercicio> findByTreinoId(long treinoId) {
+        return exercicioRepository.findByTreinoId(treinoId);
+    }
 }

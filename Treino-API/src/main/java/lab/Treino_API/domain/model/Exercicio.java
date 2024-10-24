@@ -1,11 +1,10 @@
 package lab.Treino_API.domain.model;
 
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -17,36 +16,12 @@ public class Exercicio {
     private Long id;
 
     private String nome;
+    private double carga;
     private int series;
-    private int repeticoes;
-    private int carga;
-    private int descanso;
-    private int energia;
-
-    @ManyToOne
-    @JoinColumn(name = "treino_id")
-    private Treino treino;
-
-    @ManyToOne
-    @JoinColumn(name = "categoria_id")
-    private Categoria categoria;
-
-
+    private int tempo; // em segundos
+    private int descanso; // em segundos
 
     public Exercicio() {
-    }
-
-    public Exercicio(Long id, String nome, int series, int repeticoes, int carga, int descanso, int energia,
-            Treino treino, Categoria categoria) {
-        this.id = id;
-        this.nome = nome;
-        this.series = series;
-        this.repeticoes = repeticoes;
-        this.carga = carga;
-        this.descanso = descanso;
-        this.energia = energia;
-        this.treino = treino;
-        this.categoria = categoria;
     }
 
     public Long getId() {
@@ -65,6 +40,14 @@ public class Exercicio {
         this.nome = nome;
     }
 
+    public double getCarga() {
+        return carga;
+    }
+
+    public void setCarga(double carga) {
+        this.carga = carga;
+    }
+
     public int getSeries() {
         return series;
     }
@@ -73,20 +56,12 @@ public class Exercicio {
         this.series = series;
     }
 
-    public int getRepeticoes() {
-        return repeticoes;
+    public int getTempo() {
+        return tempo;
     }
 
-    public void setRepeticoes(int repeticoes) {
-        this.repeticoes = repeticoes;
-    }
-
-    public int getCarga() {
-        return carga;
-    }
-
-    public void setCarga(int carga) {
-        this.carga = carga;
+    public void setTempo(int tempo) {
+        this.tempo = tempo;
     }
 
     public int getDescanso() {
@@ -96,31 +71,5 @@ public class Exercicio {
     public void setDescanso(int descanso) {
         this.descanso = descanso;
     }
-
-    public int getEnergia() {
-        return energia;
-    }
-
-    public void setEnergia(int energia) {
-        this.energia = energia;
-    }
-
-    public Treino getTreino() {
-        return treino;
-    }
-
-    public void setTreino(Treino treino) {
-        this.treino = treino;
-    }
-
-    public Categoria getCategoria() {
-        return categoria;
-    }
-
-    public void setCategoria(Categoria categoria) {
-        this.categoria = categoria;
-    }
-
-    
 
 }

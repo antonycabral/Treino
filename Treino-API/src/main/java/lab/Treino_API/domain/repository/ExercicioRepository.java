@@ -8,4 +8,5 @@ import lab.Treino_API.domain.model.Exercicio;
 
 public interface ExercicioRepository extends JpaRepository<Exercicio, Long> {
     List<Exercicio> findByNomeContainingIgnoreCase(String nome);
+    List<Exercicio> findByTreinoId(long treinoId);
 }
