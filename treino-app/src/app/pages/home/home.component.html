@@ -1,0 +1,14 @@
+<div class="main-container">
+    <div class="container mt-5">
+        <h1>Bem-vindo ao App de Treino!</h1>
+        <h2>Selecione seu Usuário</h2>
+
+        <div class="selecionar">
+            <div class="list-group mt-3">
+                <button type="button" class="list-group-item list-group-item-action" *ngFor="let user of users" (click)="selectUser(user.id)">
+                    {{ user.nomeCompleto }}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
