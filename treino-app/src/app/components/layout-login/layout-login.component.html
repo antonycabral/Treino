@@ -1,0 +1,25 @@
+<main class="container my-5">
+    <section class="form-section text-center mb-4">
+        <h2 class="mb-3">{{ title }}</h2>
+        <ng-content></ng-content>
+        <div class="btn-wrapper mt-4">
+            <button
+                class="btn btn-primary"
+                (click)="submit()"
+                [disabled]="disablePrimaryBtn"
+            >
+                {{ primaryBtnText }}
+            </button>
+            <div class="d-flex align-items-center my-3">
+                <div class="divider flex-grow-1 bg-secondary" style="height: 1px;"></div>
+                <span class="px-2 text-secondary">or</span>
+                <div class="divider flex-grow-1 bg-secondary" style="height: 1px;"></div>
+            </div>
+            <button class="btn btn-outline-secondary" (click)="navigate()">{{ secondaryBtnText }}</button>
+        </div>
+    </section>
+    
+    <section class="main-section text-center mt-5">
+        <h1 class="display-4">You Should, MoveIt!</h1>
+    </section>
+</main>

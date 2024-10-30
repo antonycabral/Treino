@@ -1,15 +1,15 @@
 package lab.login_auth_api.domain;
 
-
-
+import java.time.LocalDate;
 import java.util.List;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,22 +17,24 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "users")
+@Table(name = "treino")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class User {
+public class Treino {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
-    private String name;
-    private String email;
-    private String password;
+    private String nome;
+    private LocalDate dataCriacao;
 
-    @OneToOne(mappedBy = "user")
-    private UserData userData;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
-    @OneToMany(mappedBy = "user" )
-    private List<Treino> treinos;
+    @OneToMany(mappedBy = "treino")
+    private List<Exercicio> exercicios;
+
+    
 }
