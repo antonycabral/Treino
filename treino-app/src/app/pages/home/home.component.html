@@ -1,9 +1,66 @@
-<app-navbar></app-navbar>
-<div class="main">
-    <div class="container text-center mt-5">
-        <h1>Bem-vindo, {{ userName }}!</h1>
-        <p class="lead">Estamos prontos para iniciar seu treino!</p>
-        <button class="btn btn-primary mt-3" (click)="goToTreinos()">Ir para Treinos</button>
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col">
+            <h2 class="display-6">Bem vindo, {{usuario.nome}}!</h2>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+            <h5 class="card-title mb-0">Informações Pessoais</h5>
+            </div>
+            <div class="card-body">
+            <div class="row">
+                <div class="col-md-4">
+                <p><strong>Email:</strong> {{usuario.email}}</p>
+                <p><strong>Idade:</strong> {{usuario.idade}} anos</p>
+                </div>
+                <div class="col-md-4">
+                <p><strong>Altura:</strong> {{usuario.altura}}cm</p>
+                <p><strong>Peso:</strong> {{usuario.peso}}kg</p>
+                </div>
+                <div class="col-md-4">
+                <p><strong>Objetivo:</strong> {{usuario.objetivo}}</p>
+                <p><strong>IMC:</strong> {{usuario.imc}}</p>
+                </div>
+            </div>
+            </div>
+        </div>
+        </div>
+    </div>
+
+    <!-- Workout and Performance Section -->
+    <div class="row">
+        <!-- Workout Card -->
+        <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header">
+            <h5 class="card-title mb-0">Treino Atual</h5>
+            </div>
+            <div class="card-body">
+            <h6>Treino: {{treino.nome}}</h6>
+            <p>Objetivo: {{treino.objetivo}}</p>
+            <p>Próximo treino: {{treino.proximoTreino}}</p>
+            <button class="btn btn-primary">Iniciar Treino</button>
+            </div>
+        </div>
+    </div>
+
+        <!-- Performance Card -->
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header">
+            <h5 class="card-title mb-0">Desempenho</h5>
+            </div>
+            <div class="card-body">
+            <p>Treinos realizados: {{desempenho.treinosRealizados}}</p>
+            <p>Frequência semanal: {{desempenho.frequenciaSemanal}}</p>
+            <p>Última atividade: {{desempenho.ultimaAtividade}}</p>
+            <button class="btn btn-secondary">Ver Histórico Completo</button>
+            </div>
+        </div>
+        </div>
     </div>
 </div>
-<app-footer></app-footer>

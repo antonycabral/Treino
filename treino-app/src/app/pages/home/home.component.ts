@@ -1,23 +1,41 @@
+import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { NavbarComponent } from "../../components/navbar/navbar.component";
-import { Router } from '@angular/router';
-import { FooterComponent } from "../../components/footer/footer.component";
+import { RouterModule } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
+import { UsuarioService } from '../../services/usuario.service';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [NavbarComponent, FooterComponent],
+  imports: [CommonModule, RouterModule],
+  providers:[AuthService, UsuarioService],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css'
 })
 export class HomeComponent implements OnInit {
-  userName: string = 'Antony';
+  usuario: any = {};
+  temTreino = false;
 
-  constructor(private router: Router) {}
+  constructor(
+    private authService: AuthService,
+    private userService: UsuarioService
+  ) {}
 
-  ngOnInit(): void {}
+  ngOnInit() {
+    this.carregarDadosUsuario();
+  }
 
-  goToTreinos(): void {
-    this.router.navigate(['/treinos']);
+  carregarDadosUsuario() {
+    const userEmail = this.authService.getCurrentUserEmail();
+    if (userEmail) {
+      this.userService.getUserByEmail(userEmail).subscribe(
+        data => {
+          this.usuario = data;
+        },
+        error => {
+          alert('Erro ao carregar dados do usuário');
+        }
+      );
+    }
   }
 }

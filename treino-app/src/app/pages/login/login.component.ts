@@ -1,55 +1,41 @@
 import { Component } from '@angular/core';
-import { FormControl, FormGroup, FormRecord, ReactiveFormsModule, Validators } from '@angular/forms';
+import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
-import { LoginService } from '../../services/login.service';
-import { ToastrService } from 'ngx-toastr';
-import { PrimaryInputComponent } from '../../components/input-primary/input-primary.component';
-import { LayoutLoginComponent } from '../../components/layout-login/layout-login.component';
-
-interface LoginForm {
-  email: FormControl,
-  password: FormControl
-}
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [
-    LayoutLoginComponent,
-    ReactiveFormsModule,
-    PrimaryInputComponent
-  ],
-  providers: [
-    LoginService
-  ],
+  imports: [FormsModule],
+  providers: [AuthService],
   templateUrl: './login.component.html',
-  styleUrl: './login.component.scss'
+  styleUrl: './login.component.css'
 })
 export class LoginComponent {
-  loginForm!: FormGroup<LoginForm>;
+  credentials = {
+    email: '',
+    password: ''
+  };
 
-  constructor(
-    private router: Router,
-    private loginService: LoginService,
-    private toastService: ToastrService
-  ){
-    this.loginForm = new FormGroup({
-      email: new FormControl('', [Validators.required, Validators.email]),
-      password: new FormControl('', [Validators.required, Validators.minLength(6)])
-    })
-  }
+  constructor(private authService: AuthService, private router: Router) {}
 
-  submit(){
-    this.loginService.login(this.loginForm.value.email, this.loginForm.value.password).subscribe(
-      () => {
-        this.toastService.success("Login feito com sucesso!");
-        this.router.navigate(["home"]);
+  onSubmit() {
+    this.authService.login(this.credentials).subscribe(
+      response => {
+        this.authService.setCurrentUserEmail(this.credentials.email);
+        this.router.navigate(['/home']);
       },
-      () => this.toastService.error("Erro inesperado! Tente novamente mais tarde")
+      error => {
+        if (error.error && error.error.message) {
+          alert(error.error.message);
+        } else {
+          alert('Erro ao fazer login. Tente novamente.');
+        }
+      }
     )
   }
 
-  navigate(){
-    this.router.navigate(["signup"])
+  navigateToCadastro() {
+    this.router.navigate(['cadastro']); // Redireciona para a página de cadastro
   }
 }
