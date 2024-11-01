@@ -55,6 +55,7 @@ public ResponseEntity<Map<String, String>> login(@RequestBody Map<String, String
 
     if (usuario.isPresent() && usuario.get().getPassword().equals(password)) {
         response.put("message", "Bem-vindo ao Treino App!");
+        response.put("email", email); // Adding email to response
         return ResponseEntity.ok(response);
     } else {
         response.put("message", "Credenciais inválidas.");
