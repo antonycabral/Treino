@@ -20,13 +20,13 @@ export class LoginComponent {
   constructor(private authService: AuthService, private router: Router) {}
 
   onSubmit() {
-    this.authService.login(this.credentials.email, this.credentials.password).subscribe(response => {
+    this.authService.login(this.credentials).subscribe(response => {
       alert('Login bem-sucedido!');
       this.router.navigate(['home']);
     }, error => {
       alert('Erro ao fazer login: ' + error.message);
     });
-}
+  }
 
   navigateToCadastro() {
     this.router.navigate(['/cadastro']); // Redireciona para a página de cadastro
