@@ -25,11 +25,13 @@ export class CadastroComponent {
   constructor(private authService: AuthService, private router: Router) {}
 
   onSubmit() {
-    this.authService.cadastrar(this.usuario).subscribe(response => {
-      alert('Usuário cadastrado com sucesso!');
-      this.router.navigate(['/login']); // Redirecionar para a página de login
-    }, error => {
-      alert('Erro ao cadastrar usuário: ' + error.message);
+    this.authService.cadastrar(this.usuario).subscribe({
+      next: () => {
+        this.router.navigate(['/login']);
+      },
+      error: (error) => {
+        console.error('Erro no cadastro:', error);
+      }
     });
   }
 }

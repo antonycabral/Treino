@@ -24,9 +24,6 @@ public class UsuarioService {
         return usuarioRepository.save(usuario);
     }
 
-    public Optional<Usuario> buscarPorEmail(String email) {
-        return Optional.ofNullable(usuarioRepository.findByEmail(email));
-    }
 
     public Optional<Usuario> buscarPorId(String id) {
         return usuarioRepository.findById(id);
@@ -50,6 +47,11 @@ public class UsuarioService {
 
     public void deletarUsuario(String id) {
         usuarioRepository.deleteById(id);
+    }
+
+    public Usuario findByEmail(String email) {
+        return usuarioRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
     }
 
 }
