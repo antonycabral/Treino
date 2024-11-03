@@ -86,6 +86,10 @@ editarTreino(treino: any) {
   this.router.navigate(['treino/editar', treino.id]);
 }
 
+selecionarTreino(treinoId: string) {
+  this.router.navigate(['/treino', treinoId]);
+}
+
   navegarParaPerfil() {
     this.router.navigate(['/perfil']);
   }

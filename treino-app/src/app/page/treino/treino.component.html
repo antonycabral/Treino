@@ -1,0 +1,43 @@
+<div class="container mt-5">
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h2>{{treino.nome}}</h2>
+            <span class="badge bg-light text-primary">{{treino.nivel}}</span>
+        </div>
+        <div class="card-body">
+            <p class="lead">{{treino.descricao}}</p>
+            
+            <div class="mt-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h3>Exercícios</h3>
+                    <button class="btn btn-success" (click)="adicionarExercicio()">
+                        Adicionar Exercício
+                    </button>
+                </div>
+
+                <div *ngIf="!treino.exercicios || treino.exercicios.length === 0" class="text-center p-4">
+                    <p class="text-muted">Nenhum exercício cadastrado</p>
+                </div>
+
+                <div class="row">
+                    <div *ngFor="let exercicio of treino.exercicios" class="col-md-4 mb-3">
+                        <div class="card">
+                            <div class="card-body">
+                                <h4 class="card-title">{{exercicio.nome}}</h4>
+                                <p class="card-text">{{exercicio.descricao}}</p>
+                                <ul class="list-unstyled">
+                                    <li><strong>Séries:</strong> {{exercicio.series}}</li>
+                                    <li><strong>Repetições:</strong> {{exercicio.repeticoes}}</li>
+                                    <li><strong>Carga:</strong> {{exercicio.carga}}kg</li>
+                                </ul>
+                                <button class="btn btn-sm btn-danger" (click)="removerExercicio(exercicio.id)">
+                                    Remover
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

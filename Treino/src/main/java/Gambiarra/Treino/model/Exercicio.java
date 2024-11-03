@@ -1,42 +1,37 @@
 package Gambiarra.Treino.model;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "tb_treino")
-public class Treino {
+@Table(name = "tb_exercicio")
+public class Exercicio {
     
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
     private String nome;
     private String descricao;
-    private String nivel;
+    private Integer series;
+    private Integer repeticoes;
+    private Integer carga;
     
     @ManyToOne
-    @JoinColumn(name = "usuario_id")
+    @JoinColumn(name = "treino_id")
     @JsonBackReference
-    private Usuario usuario;
+    private Treino treino;
 
-    @OneToMany(mappedBy = "treino", cascade = CascadeType.ALL)
-    private List<Exercicio> exercicios = new ArrayList<>();
+    // Constructors
+    public Exercicio() {}
 
-    public Treino() {
-    }
-
+    // Getters and Setters
     public String getId() {
         return id;
     }
@@ -61,36 +56,35 @@ public class Treino {
         this.descricao = descricao;
     }
 
-    public String getNivel() {
-        return nivel;
+    public Integer getSeries() {
+        return series;
     }
 
-    public void setNivel(String nivel) {
-        this.nivel = nivel;
+    public void setSeries(Integer series) {
+        this.series = series;
     }
 
-    public Usuario getUsuario() {
-        return usuario;
+    public Integer getRepeticoes() {
+        return repeticoes;
     }
 
-    public void setUsuario(Usuario usuario) {
-        this.usuario = usuario;
+    public void setRepeticoes(Integer repeticoes) {
+        this.repeticoes = repeticoes;
     }
 
-
-
-    public List<Exercicio> getExercicios() {
-        return exercicios;
+    public Integer getCarga() {
+        return carga;
     }
 
-
-
-    public void setExercicios(List<Exercicio> exercicios) {
-        this.exercicios = exercicios;
+    public void setCarga(Integer carga) {
+        this.carga = carga;
     }
 
-    public void addExercicio(Exercicio exercicio) {
-        exercicios.add(exercicio);
-        exercicio.setTreino(this);
+    public Treino getTreino() {
+        return treino;
+    }
+
+    public void setTreino(Treino treino) {
+        this.treino = treino;
     }
 }
