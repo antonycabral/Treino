@@ -21,10 +21,9 @@ export class LoginComponent {
 
   onSubmit() {
     this.authService.login(this.credentials).subscribe(response => {
-      alert('Login bem-sucedido!');
+      localStorage.setItem('token', response.token);
+      localStorage.setItem('userId', response.id);
       this.router.navigate(['home']);
-    }, error => {
-      alert('Erro ao fazer login: ' + error.message);
     });
   }
 

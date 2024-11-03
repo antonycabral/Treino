@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { UserService } from '../../service/user.service';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../service/auth.service';
 import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
@@ -9,13 +9,15 @@ import { TreinoService } from '../../service/treino.service';
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule,HttpClientModule],
+  imports: [CommonModule,HttpClientModule,RouterModule],
   providers: [UserService,AuthService,TreinoService],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css'
 })
 export class HomeComponent implements OnInit {
-  usuario: any = {};
+  usuario: any = {
+    treinos: []
+  };
 
   constructor(
     private router: Router,
@@ -25,21 +27,16 @@ export class HomeComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    if (typeof window !== 'undefined') {
-      const userEmail = window.localStorage.getItem('userEmail');
-      if (userEmail) {
-        this.userService.getUserByEmail(userEmail).subscribe({
-          next: (data) => {
-            this.usuario = data;
-            this.carregarTreinos(); // Now we call carregarTreinos after user data is loaded
-          },
-          error: (error) => {
-            console.error('Erro ao carregar dados do usuário:', error);
-          }
+    const userId = localStorage.getItem('userId');
+    if (userId) {
+        this.userService.getUserById(userId).subscribe({
+            next: (data) => {
+                this.usuario = data;
+                this.carregarTreinos(); // Remove userId parameter
+            }
         });
-      }
     }
-  }
+}
 
   calcularIMC(): number {
     const altura = this.usuario.altura / 100; // convertendo cm para metros
@@ -57,17 +54,25 @@ getClassificacaoIMC(): string {
     return 'Obesidade Grau III';
 }
 
-carregarTreinos() {
-  if (this.usuario && this.usuario.id) {
-    this.treinoService.listarTreinosPorUsuario(this.usuario.id)
-      .subscribe(treinos => {
-        this.usuario.treinos = treinos;
-      });
+  carregarTreinos() {
+    const userId = localStorage.getItem('userId');
+    if (userId) {
+        this.treinoService.listarTreinosPorUsuario(userId)
+            .subscribe({
+                next: (treinos) => {
+                    console.log('Treinos carregados:', treinos);
+                    this.usuario.treinos = treinos;
+                },
+                error: (error) => {
+                    console.error('Erro ao carregar treinos:', error);
+                }
+            });
+    }
   }
-}
 
-removerTreino(id: string) {
-  this.treinoService.deletarTreino(id)
+
+removerTreino(userId: string) {
+  this.treinoService.deletarTreino(userId)
     .subscribe(() => {
       this.carregarTreinos();
     });

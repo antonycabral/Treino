@@ -38,17 +38,17 @@ public class UsuarioController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Usuario> buscarPorId(@PathVariable String id) {
+    public ResponseEntity<Usuario> buscarPorId(@PathVariable String id)
+    {
         Optional<Usuario> usuario = usuarioService.buscarPorId(id);
         return usuario.map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
 
     @GetMapping("/email/{email}")
-    public ResponseEntity<Usuario> buscarPorEmail(@PathVariable String email) {
-        Optional<Usuario> usuario = Optional.ofNullable(usuarioService.findByEmail(email));
-        return usuario.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+    public ResponseEntity<Usuario> getUserByEmail(@PathVariable String email) {
+        Usuario usuario = usuarioService.findByEmail(email);
+        return ResponseEntity.ok(usuario);
     }
 
     @PutMapping("/{id}")

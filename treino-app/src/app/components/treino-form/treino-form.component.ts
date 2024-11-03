@@ -25,11 +25,12 @@ export class TreinoFormComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute
   ) {
+    const userId = localStorage.getItem('userId');
     this.treinoForm = this.fb.group({
       nome: ['', Validators.required],
       descricao: ['', Validators.required],
       nivel: ['', Validators.required],
-      usuarioId: ['']
+      usuarioId: [userId]
     });
   }
 
@@ -43,15 +44,24 @@ export class TreinoFormComponent implements OnInit {
 
   onSubmit() {
     if (this.treinoForm.valid) {
+      const userId = localStorage.getItem('userId');
+      const treinoData = {
+        ...this.treinoForm.value,
+        usuario: {
+          id: userId
+        }
+      };
+  
       if (this.isEditing) {
-        this.treinoService.atualizarTreino(this.route.snapshot.params['id'], this.treinoForm.value)
+        this.treinoService.atualizarTreino(this.route.snapshot.params['id'], treinoData)
           .subscribe(() => this.router.navigate(['/home']));
       } else {
-        this.treinoService.criarTreino(this.treinoForm.value)
+        this.treinoService.criarTreino(treinoData)
           .subscribe(() => this.router.navigate(['/home']));
       }
     }
   }
+
 
   private carregarTreino(id: string) {
     this.treinoService.getTreino(id).subscribe(treino => {

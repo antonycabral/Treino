@@ -1,6 +1,6 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { catchError, map, Observable, of } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -21,11 +21,32 @@ export class TreinoService {
   }
 
   criarTreino(treino: any): Observable<any> {
-    return this.http.post(this.apiUrl, treino, this.getHeaders());
+    const userId = localStorage.getItem('userId');
+    const treinoData = {
+      ...treino,
+      usuario: {
+        id: userId
+      }
+    };
+    return this.http.post(this.apiUrl, treinoData, this.getHeaders());
   }
 
   listarTreinosPorUsuario(usuarioId: string): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/usuario/${usuarioId}`, this.getHeaders());
+    return this.http.get<any[]>(`${this.apiUrl}/usuario/${usuarioId}`, {
+      ...this.getHeaders(),
+      observe: 'response'
+    }).pipe(
+      map(response => {
+        if (response.body) {
+          return response.body;
+        }
+        return [];
+      }),
+      catchError(error => {
+        console.log('Raw response:', error);
+        return of([]);
+      })
+    );
   }
 
   deletarTreino(id: string): Observable<void> {
