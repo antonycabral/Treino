@@ -31,12 +31,19 @@
                                     <li><strong>Carga:</strong> {{exercicio.carga}}kg</li>
                                 </ul>
                                 <button class="btn btn-sm btn-danger" (click)="removerExercicio(exercicio.id)">
-                                    Remover
+                                    <i class="bi bi-trash"></i> Remover
                                 </button>
                             </div>
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+        <div class="container mt-5">
+            <div class="d-flex justify-content-between mb-3">
+                <button class="btn btn-secondary" (click)="voltar()">
+                    <i class="bi bi-arrow-left"></i> Voltar
+                </button>
             </div>
         </div>
     </div>

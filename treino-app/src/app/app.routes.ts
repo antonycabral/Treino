@@ -5,6 +5,7 @@ import { CadastroComponent } from './page/cadastro/cadastro.component';
 import { TreinoFormComponent } from './components/treino-form/treino-form.component';
 import { AuthGuard } from './auth.guard';
 import { TreinoComponent } from './page/treino/treino.component';
+import { ExercicioFormComponent } from './components/exercicio-form/exercicio-form.component';
 
 export const routes: Routes = [
     { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -13,5 +14,6 @@ export const routes: Routes = [
     { path: 'home', component: HomeComponent, canActivate: [AuthGuard] },
     { path: 'treino/novo', component: TreinoFormComponent, canActivate: [AuthGuard] },
     { path: 'treino/editar/:id', component: TreinoFormComponent, canActivate: [AuthGuard] },
-    { path: 'treino/:id', component: TreinoComponent, canActivate: [AuthGuard] }
+    { path: 'treino/:id', component: TreinoComponent, canActivate: [AuthGuard] },
+    { path: 'exercicio/novo', component: ExercicioFormComponent, canActivate: [AuthGuard] },
 ];
