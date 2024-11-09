@@ -32,18 +32,10 @@ export class TreinoService {
   }
 
   listarTreinosPorUsuario(usuarioId: string): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/usuario/${usuarioId}`, {
-      ...this.getHeaders(),
-      observe: 'response'
-    }).pipe(
-      map(response => {
-        if (response.body) {
-          return response.body;
-        }
-        return [];
-      }),
+    return this.http.get<any[]>(`${this.apiUrl}/usuario/${usuarioId}`, this.getHeaders()).pipe(
+      map(response => response || []),
       catchError(error => {
-        console.log('Raw response:', error);
+        console.log('Error:', error);
         return of([]);
       })
     );
@@ -58,6 +50,11 @@ export class TreinoService {
   }
 
   getTreino(id: string): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/${id}`, this.getHeaders());
-  }
+    return this.http.get<any>(`${this.apiUrl}/${id}`, this.getHeaders()).pipe(
+      catchError(error => {
+        console.error('Error fetching treino:', error);
+        return of(null);
+      })
+    );
+}
 }

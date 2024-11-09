@@ -11,11 +11,20 @@ import { TreinoService } from '../../service/treino.service';
   styleUrl: './treino-tela.component.css'
 })
 export class TreinoTelaComponent implements OnInit, OnDestroy {
-  treino: any = {};
-  currentExerciseIndex = 0;
-  currentExercise: any;
+  treino: any = {
+    nome: '',
+    exercicios: []
+  };
+  currentExercise: any = null;
+  remainingExercises: any[] = [];
+  completedExercises: any[] = [];
   elapsedTime = 0;
   timerInterval: any;
+  currentSeries: number = 1;
+  isResting: boolean = false;
+  restTimeLeft: number = 60;
+  restInterval: any;
+  seriesCompleted: boolean = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -25,33 +34,48 @@ export class TreinoTelaComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     const treinoId = this.route.snapshot.params['id'];
-    this.treinoService.getTreino(treinoId).subscribe(treino => {
-      this.treino = treino;
-      this.currentExercise = this.treino.exercicios[0];
-      this.startTimer();
+    this.treinoService.getTreino(treinoId).subscribe({
+      next: (treino) => {
+        if (treino) {
+          this.treino = treino;
+          this.remainingExercises = [...(treino.exercicios || [])];
+        } else {
+          console.error('Treino não encontrado');
+          this.router.navigate(['/home']);
+        }
+      },
+      error: (error) => {
+        console.error('Erro ao carregar treino:', error);
+        this.router.navigate(['/home']);
+      }
     });
   }
 
-  startTimer() {
-    this.timerInterval = setInterval(() => {
-      this.elapsedTime++;
-    }, 1000);
-  }
 
   ngOnDestroy() {
     this.stopTimer();
+    this.stopRestTimer();
   }
 
-  nextExercise() {
-    if (this.currentExerciseIndex < this.treino.exercicios.length - 1) {
-      this.currentExerciseIndex++;
-      this.currentExercise = this.treino.exercicios[this.currentExerciseIndex];
+  startTimer() {
+    if (!this.timerInterval) {
+      this.timerInterval = setInterval(() => {
+        this.elapsedTime++;
+      }, 1000);
     }
   }
 
   stopTimer() {
     if (this.timerInterval) {
       clearInterval(this.timerInterval);
+      this.timerInterval = null;
+    }
+  }
+
+  stopRestTimer() {
+    if (this.restInterval) {
+      clearInterval(this.restInterval);
+      this.restInterval = null;
     }
   }
 
@@ -59,7 +83,6 @@ export class TreinoTelaComponent implements OnInit, OnDestroy {
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
     const remainingSeconds = seconds % 60;
-
     return `${this.padNumber(hours)}:${this.padNumber(minutes)}:${this.padNumber(remainingSeconds)}`;
   }
 
@@ -67,8 +90,56 @@ export class TreinoTelaComponent implements OnInit, OnDestroy {
     return num.toString().padStart(2, '0');
   }
 
+  selectExercise(exercise: any) {
+    if (this.currentExercise) {
+      this.completedExercises.push(this.currentExercise);
+    } else {
+      this.startTimer();
+    }
+    
+    this.currentExercise = exercise;
+    this.remainingExercises = this.remainingExercises.filter(ex => ex !== exercise);
+    this.seriesCompleted = false;
+    this.currentSeries = 1;
+    this.isResting = false;
+    this.stopRestTimer();
+  }
+
+  startRestTimer() {
+    this.isResting = true;
+    this.restTimeLeft = 60;
+    this.restInterval = setInterval(() => {
+      this.restTimeLeft--;
+      if (this.restTimeLeft <= 0) {
+        this.finishRest();
+      }
+    }, 1000);
+  }
+
+  finishRest() {
+    this.stopRestTimer();
+    this.isResting = false;
+    if (this.currentSeries < this.currentExercise.series) {
+      this.currentSeries++;
+    }
+  }
+
+  completeSeries() {
+    if (this.currentSeries < this.currentExercise.series) {
+      this.startRestTimer();
+    } else {
+      this.seriesCompleted = true;
+      this.currentSeries = 1;
+      if (this.remainingExercises.length === 0) {
+        this.finishTraining();
+      }
+    }
+  }
+
   finishTraining() {
     this.stopTimer();
+    this.stopRestTimer();
+    // You can add logic here to save training data if needed
     this.router.navigate(['/home']);
   }
 }
