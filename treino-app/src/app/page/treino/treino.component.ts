@@ -73,6 +73,10 @@ export class TreinoComponent implements OnInit {
     });
   }
 
+  iniciarTreino() {
+    this.router.navigate(['/treino-tela', this.treino.id]);
+  }
+
   voltar() {
     this.router.navigate(['/home']);
 }

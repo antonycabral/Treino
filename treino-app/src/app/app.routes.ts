@@ -6,6 +6,7 @@ import { TreinoFormComponent } from './components/treino-form/treino-form.compon
 import { AuthGuard } from './auth.guard';
 import { TreinoComponent } from './page/treino/treino.component';
 import { ExercicioFormComponent } from './components/exercicio-form/exercicio-form.component';
+import { TreinoTelaComponent } from './page/treino-tela/treino-tela.component';
 
 export const routes: Routes = [
     { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -16,4 +17,5 @@ export const routes: Routes = [
     { path: 'treino/editar/:id', component: TreinoFormComponent, canActivate: [AuthGuard] },
     { path: 'treino/:id', component: TreinoComponent, canActivate: [AuthGuard] },
     { path: 'exercicio/novo', component: ExercicioFormComponent, canActivate: [AuthGuard] },
+    {path: 'treino-tela/:id', component:TreinoTelaComponent, canActivate: [AuthGuard]}
 ];
