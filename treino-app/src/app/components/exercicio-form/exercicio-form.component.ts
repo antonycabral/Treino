@@ -33,11 +33,26 @@ export class ExercicioFormComponent implements OnInit {
     });
   }
 
+  limparFormulario() {
+    this.exercicio = {
+      nome: '',
+      descricao: '',
+      series: 0,
+      repeticoes: 0,
+      carga: 0
+    };
+  }
+
   salvarExercicio() {
     this.exercicioService.criarExercicio(this.treinoId, this.exercicio)
       .subscribe({
         next: () => {
-          this.router.navigate(['/treino', this.treinoId]);
+          const confirma = window.confirm('Exercício salvo! Deseja adicionar mais um exercício?');
+          if (confirma) {
+            this.limparFormulario();
+          } else {
+            this.router.navigate(['/treino', this.treinoId]);
+          }
         },
         error: (error) => {
           console.error('Erro ao criar exercício:', error);
