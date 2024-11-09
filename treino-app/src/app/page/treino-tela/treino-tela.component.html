@@ -69,6 +69,31 @@
                         <h4>Tempo de descanso</h4>
                         <p class="display-4">{{restTimeLeft}}s</p>
                     </div>
+                
+                    <div *ngIf="showFeedbackForm" class="feedback-form mt-4">
+                        <h5>Como foi a série?</h5>
+                        <div class="form-group">
+                            <label>Repetições executadas:</label>
+                            <input type="number" class="form-control" [(ngModel)]="seriesFeedback.repeticoesExecutadas">
+                        </div>
+                        
+                        <div class="form-group mt-3">
+                            <label>Como estava a carga?</label>
+                            <select class="form-control" [(ngModel)]="seriesFeedback.cargaFeedback">
+                                <option value="leve">Leve</option>
+                                <option value="adequada">Adequada</option>
+                                <option value="pesada">Pesada</option>
+                            </select>
+                        </div>
+                
+                        <button class="btn btn-primary mt-3" (click)="processarFeedback()">
+                            Confirmar
+                        </button>
+                    </div>
+                
+                    <div *ngIf="ajusteSugerido" class="alert alert-success mt-3">
+                        {{ ajusteSugerido }}
+                    </div>
                 </div>
         
                 <div class="mt-4">
