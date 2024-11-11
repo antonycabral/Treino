@@ -9,6 +9,7 @@ import Gambiarra.Treino.model.Exercicio;
 import Gambiarra.Treino.model.Treino;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ExercicioService {
@@ -33,5 +34,19 @@ public class ExercicioService {
 
     public void deletarExercicio(String id) {
         exercicioRepository.deleteById(id);
+    }
+
+    public Optional<Exercicio> findById(String id) {
+        return exercicioRepository.findById(id);
+    }
+
+    public Exercicio atualizarExercicio(String id, Exercicio exercicioAtualizado) {
+        Exercicio exercicioExistente = exercicioRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Exercício não encontrado"));
+        
+        exercicioExistente.setCarga(exercicioAtualizado.getCarga());
+        exercicioExistente.setRepeticoes(exercicioAtualizado.getRepeticoes());
+        
+        return exercicioRepository.save(exercicioExistente);
     }
 }

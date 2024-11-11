@@ -2,8 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TreinoService } from '../../service/treino.service';
 import { ExercicioService } from '../../service/exercicio.service';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, FormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { ExercicioHistoricoService } from '../../service/exercicio-historico.service';
+import { ExercicioProgressoComponent } from "../../components/exercicio-progresso/exercicio-progresso.component";
 
 interface Exercicio {
   id: string;
@@ -17,7 +19,7 @@ interface Exercicio {
 @Component({
   selector: 'app-treino',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, ExercicioProgressoComponent,FormsModule],
   templateUrl: './treino.component.html',
   styleUrl: './treino.component.css'
 })
@@ -27,12 +29,14 @@ export class TreinoComponent implements OnInit {
   };
   exercicioForm: FormGroup;
   modal: any;
+  historicoExercicio: { [key: string]: any[] } = {};
 
   constructor(
     private fb: FormBuilder,
     private route: ActivatedRoute,
     private treinoService: TreinoService,
     private exercicioService: ExercicioService,
+    private exercicioHistoricoService: ExercicioHistoricoService,
     private router: Router
   ) {this.exercicioForm = this.fb.group({
     nome: ['', Validators.required],
@@ -79,5 +83,16 @@ export class TreinoComponent implements OnInit {
 
   voltar() {
     this.router.navigate(['/home']);
-}
+  }
+
+  mostrarHistorico(exercicioId: string) {
+    this.exercicioHistoricoService.getHistorico(exercicioId).subscribe({
+      next: (historico) => {
+        this.historicoExercicio[exercicioId] = historico;
+      },
+      error: (error) => {
+        console.error('Erro ao carregar histórico:', error);
+      }
+    });
+  }
 }

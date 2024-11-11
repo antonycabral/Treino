@@ -2,12 +2,14 @@ import { CommonModule } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TreinoService } from '../../service/treino.service';
+import { DesempenhoService } from '../../service/desempenho.service';
 import { FormsModule } from '@angular/forms';
+import { ExercicioHistoricoService } from '../../service/exercicio-historico.service';
+import { SeriesFeedback } from '../../../Models/SeriesFeedback';
+import { AjusteExercicio } from '../../../Models/AjusteExercicio';
+import { ExercicioService } from '../../service/exercicio.service';
 
-export interface SeriesFeedback {
-  repeticoesExecutadas: number;
-  cargaFeedback: 'leve' | 'adequada' | 'pesada';
-}
+
 
 @Component({
   selector: 'app-treino-tela',
@@ -38,10 +40,14 @@ export class TreinoTelaComponent implements OnInit, OnDestroy {
   };
   ajusteSugerido: string = '';
   tempoDescansoExtra: number = 0;
+  ajusteTemporario: AjusteExercicio | null = null;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
+    private desempenhoService: DesempenhoService,
+    private exercicioService: ExercicioService,
+    private exercicioHistoricoService: ExercicioHistoricoService,
     private treinoService: TreinoService
   ) {}
 
@@ -121,9 +127,7 @@ export class TreinoTelaComponent implements OnInit, OnDestroy {
   startRestTimer() {
     this.isResting = true;
     this.restTimeLeft = 60;
-    this.showFeedbackForm = true;
     
-    // começa a contar imediatamente
     this.restInterval = setInterval(() => {
         this.restTimeLeft--;
         if (this.restTimeLeft <= 0) {
@@ -133,68 +137,68 @@ export class TreinoTelaComponent implements OnInit, OnDestroy {
 }
 
 processarFeedback() {
-  const { repeticoesExecutadas, cargaFeedback } = this.seriesFeedback;
-  const repeticoesAlvo = this.currentExercise.repeticoes;
-  const cargaAtual = this.currentExercise.carga;
+  if (!this.currentExercise || !this.seriesFeedback) return;
 
-  // Situação 1: Carga leve e repetições acima do alvo
-  if (cargaFeedback === 'leve' && repeticoesExecutadas > repeticoesAlvo) {
-      this.ajusteSugerido = `Sugestão: Aumentar carga em 2kg (${cargaAtual + 2}kg) para intensificar o treino.`;
-  } 
-  // Situação 2: Carga adequada com esforço adequado
-  else if (cargaFeedback === 'adequada' && repeticoesExecutadas >= 8 && repeticoesExecutadas <= 12) {
-      this.ajusteSugerido = 'Sugestão: Manter a carga e o tempo de descanso para continuar progredindo.';
+  const alteracao: AjusteExercicio = {
+    cargaAnterior: this.currentExercise.carga,
+    repeticoesAnteriores: this.currentExercise.repeticoes,
+    cargaNova: this.currentExercise.carga,
+    repeticoesNovas: this.currentExercise.repeticoes,
+    motivoAlteracao: ''
+  };
+
+  if (this.seriesFeedback.cargaFeedback === 'leve' &&
+      this.seriesFeedback.repeticoesExecutadas >= this.currentExercise.repeticoes) {
+    alteracao.cargaNova = this.currentExercise.carga + 2.5;
+    alteracao.motivoAlteracao = 'Aumento de carga por feedback positivo';
+    this.ajusteSugerido = `Sugerimos aumentar a carga para ${alteracao.cargaNova}kg`;
   }
-  // Situação 3: Carga adequada, mas as últimas repetições foram fáceis
-  else if (cargaFeedback === 'adequada' && repeticoesExecutadas === repeticoesAlvo && repeticoesExecutadas <= 15) {
-      this.ajusteSugerido = `Sugestão: Aumentar carga em 1kg (${cargaAtual + 1}kg) para desafiar o músculo.`;
+  else if (this.seriesFeedback.cargaFeedback === 'pesada' &&
+            this.seriesFeedback.repeticoesExecutadas < this.currentExercise.repeticoes) {
+    alteracao.cargaNova = this.currentExercise.carga - 2.5;
+    alteracao.motivoAlteracao = 'Redução de carga por feedback negativo';
+    this.ajusteSugerido = `Sugerimos diminuir a carga para ${alteracao.cargaNova}kg`;
   }
-  // Situação 4: Carga leve e repetições entre 8 e 12
-  else if (cargaFeedback === 'leve' && repeticoesExecutadas >= 8 && repeticoesExecutadas <= 12) {
-      this.ajusteSugerido = `Sugestão: Aumentar carga em 2kg (${cargaAtual + 2}kg) para manter o treino desafiador.`;
-  }
-  // Situação 5: Carga pesada e repetições abaixo de 8
-  else if (cargaFeedback === 'pesada' && repeticoesExecutadas < 8) {
-      this.ajusteSugerido = `Sugestão: Reduzir carga em 2kg (${cargaAtual - 2}kg) para evitar sobrecarga e melhorar execução.`;
-  }
-  // Situação 6: Repetições abaixo do alvo e carga adequada
-  else if (repeticoesExecutadas === 8 && cargaFeedback === 'adequada') {
-      this.ajusteSugerido = 'Sugestão: Manter carga e aumentar o tempo de descanso em 30 segundos.';
-      this.restTimeLeft += 30;
-  }
-  // Situação 7: Repetições muito altas e carga leve
-  else if (repeticoesExecutadas > 20 && cargaFeedback === 'leve') {
-      this.ajusteSugerido = `Sugestão: Aumentar carga em 3kg (${cargaAtual + 3}kg) e reduzir as repetições para até 15.`;
-  }
-  // Situação 8: Carga muito pesada com repetições muito baixas
-  else if (cargaFeedback === 'pesada' && repeticoesExecutadas <= 3) {
-      this.ajusteSugerido = `Sugestão: Reduzir carga em 3kg (${cargaAtual - 3}kg) para garantir a execução com segurança.`;
-  }
-  // Situação padrão
-  else {
-      this.ajusteSugerido = 'Nenhum ajuste necessário. Continue com a mesma carga e repetições.';
+  else if (this.seriesFeedback.cargaFeedback === 'adequada') {
+    if (this.seriesFeedback.repeticoesExecutadas > this.currentExercise.repeticoes + 2) {
+      alteracao.repeticoesNovas = this.seriesFeedback.repeticoesExecutadas;
+      alteracao.motivoAlteracao = 'Aumento de repetições por superação consistente';
+      this.ajusteSugerido = `Sugerimos aumentar para ${alteracao.repeticoesNovas} repetições`;
+    }
+    else if (this.seriesFeedback.repeticoesExecutadas < this.currentExercise.repeticoes - 2) {
+      alteracao.repeticoesNovas = this.seriesFeedback.repeticoesExecutadas;
+      alteracao.motivoAlteracao = 'Ajuste de repetições para melhor adequação';
+      this.ajusteSugerido = `Sugerimos ajustar para ${alteracao.repeticoesNovas} repetições`;
+    }
+    else {
+      this.ajusteSugerido = 'Execução adequada, mantenha o treino atual';
+    }
   }
 
-  this.showFeedbackForm = false;
+  if (alteracao.cargaNova !== this.currentExercise.carga ||
+      alteracao.repeticoesNovas !== this.currentExercise.repeticoes) {
+    this.ajusteTemporario = alteracao;
+  }
 }
+
 
   finishRest() {
     this.stopRestTimer();
     this.isResting = false;
     if (this.currentSeries < this.currentExercise.series) {
-      this.currentSeries++;
+        this.currentSeries++;
     }
   }
 
   completeSeries() {
     if (this.currentSeries < this.currentExercise.series) {
-      this.startRestTimer();
+        this.startRestTimer();
+        this.showFeedbackForm = true;
     } else {
-      this.seriesCompleted = true;
-      this.currentSeries = 1;
-      if (this.remainingExercises.length === 0) {
-        this.finishTraining();
-      }
+        this.seriesCompleted = true;
+        if (this.remainingExercises.length === 0) {
+            this.finishTraining();
+        }
     }
   }
 
@@ -203,4 +207,72 @@ processarFeedback() {
     this.stopRestTimer();
     this.router.navigate(['/home']);
   }
+
+  private registrarTreinoCompleto() {
+    const userId = localStorage.getItem('userId');
+    if (userId) {
+      const treinoData = {
+        usuarioId: userId,
+        treinoId: this.treino.id,
+        duracaoMinutos: Math.floor(this.elapsedTime / 60),
+        tipoTreino: this.treino.nome
+      };
+  
+      this.desempenhoService.registrarTreino(treinoData).subscribe({
+        next: () => console.log('Treino registrado com sucesso'),
+        error: (error) => console.error('Erro ao registrar treino:', error)
+      });
+    }
+  }
+
+  aceitarAjuste() {
+    if (this.ajusteTemporario && this.currentExercise) {
+        // First register the history
+        this.exercicioHistoricoService.registrarAlteracao(this.currentExercise.id, this.ajusteTemporario)
+            .subscribe({
+                next: () => {
+                    if (this.ajusteTemporario && this.currentExercise) {
+                        // Update the current exercise with new values
+                        if (this.ajusteTemporario.cargaNova !== this.currentExercise.carga) {
+                            this.currentExercise.carga = this.ajusteTemporario.cargaNova;
+                        }
+                        if (this.ajusteTemporario.repeticoesNovas !== this.currentExercise.repeticoes) {
+                            this.currentExercise.repeticoes = this.ajusteTemporario.repeticoesNovas;
+                        }
+
+                        // Update the exercise in the database
+                        this.exercicioService.atualizarExercicio(this.currentExercise.id, this.currentExercise)
+                            .subscribe({
+                                next: () => {
+                                    console.log('Exercício atualizado com sucesso');
+                                    // Clear states
+                                    this.ajusteSugerido = '';
+                                    this.ajusteTemporario = null;
+                                    this.showFeedbackForm = false;
+                                },
+                                error: (error) => console.error('Erro ao atualizar exercício:', error)
+                            });
+                    }
+                },
+                error: (error) => console.error('Erro ao registrar alteração:', error)
+            });
+    }
+  }
+
+  recusarAjuste() {
+    // Limpar estados sem salvar alterações
+    this.ajusteSugerido = '';
+    this.ajusteTemporario = null;
+    this.showFeedbackForm = false;
+    
+    // Continuar com o treino
+    this.startRestTimer();
+  }
+
+  voltar() {
+    this.stopTimer();
+    this.stopRestTimer();
+    this.router.navigate(['/treino', this.treino.id]);
+}
+
 }

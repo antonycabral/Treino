@@ -33,6 +33,28 @@
                                 <button class="btn btn-sm btn-danger" (click)="removerExercicio(exercicio.id)">
                                     <i class="bi bi-trash"></i> Remover
                                 </button>
+
+
+                                <div class="mt-3">
+                                    <app-exercicio-progresso [exercicioId]="exercicio.id"></app-exercicio-progresso>
+                                </div>
+
+                                <div *ngIf="historicoExercicio[exercicio.id]" class="mt-3">
+                                    <h5>Histórico de Alterações</h5>
+                                    <div class="timeline">
+                                        <div *ngFor="let alteracao of historicoExercicio[exercicio.id]" class="timeline-item">
+                                            <div class="date">{{alteracao.dataAlteracao | date}}</div>
+                                            <div class="changes">
+                                                <span *ngIf="alteracao.cargaNova">
+                                                    Carga: {{alteracao.cargaAnterior}}kg → {{alteracao.cargaNova}}kg
+                                                </span>
+                                                <span *ngIf="alteracao.repeticoesNovas">
+                                                    Repetições: {{alteracao.repeticoesAnteriores}} → {{alteracao.repeticoesNovas}}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
