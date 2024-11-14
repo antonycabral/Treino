@@ -2,60 +2,54 @@ package Gambiarra.Treino.service;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import Gambiarra.Treino.Repository.DesempenhoRepository;
 import Gambiarra.Treino.Repository.TreinoRepository;
+import Gambiarra.Treino.Repository.UsuarioRepository;
 import Gambiarra.Treino.dtos.DesempenhoDTO;
+import Gambiarra.Treino.dtos.EstatisticasDTO;
+import Gambiarra.Treino.model.Desempenho;
 
 @Service
 public class DesempenhoService {
 
     @Autowired
-    private TreinoRepository treinoRepository;
-
-    @Autowired
     private DesempenhoRepository desempenhoRepository;
 
-    public DesempenhoDTO getDesempenhoUsuario(String userId) {
-        DesempenhoDTO desempenho = new DesempenhoDTO();
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+
+    public Desempenho registrarDesempenho(DesempenhoDTO dados) {
+        Desempenho desempenho = new Desempenho();
+        desempenho.setUsuario(usuarioRepository.findById(dados.getUsuarioId()).orElseThrow());
+        desempenho.setDataTreino(LocalDateTime.now());
+        desempenho.setDuracaoMinutos(dados.getDuracaoMinutos());
+        desempenho.setExerciciosRealizados(dados.getExerciciosRealizados());
         
-        // Calcular frequência total de treinos do usuário
-        desempenho.setFrequenciaTotal(treinoRepository.countByUsuarioId(userId));
-        
-        // Calcular média semanal baseada nos treinos existentes
-        desempenho.setMediaTreinos(calcularMediaSemanal(userId));
-        
-        // Obter distribuição dos treinos na semana atual
-        desempenho.setTreinosSemanais(obterTreinosSemanais(userId));
-        
-        // Obter distribuição dos treinos no mês atual
-        desempenho.setTreinosMensais(obterTreinosMensais(userId));
-        
-        return desempenho;
+        return desempenhoRepository.save(desempenho);
     }
 
-    private List<Integer> obterTreinosSemanais(String userId) {
-        LocalDate hoje = LocalDate.now();
-        LocalDate inicioDaSemana = hoje.with(DayOfWeek.SUNDAY);
-        return treinoRepository.countTreinosPorDiaSemana(userId, inicioDaSemana);
-    }
-
-    private List<Integer> obterTreinosMensais(String userId) {
-        LocalDate hoje = LocalDate.now();
-        LocalDate inicioDoMes = hoje.withDayOfMonth(1);
-        return treinoRepository.countTreinosPorDiaMes(userId, inicioDoMes);
-    }
-
-    private double calcularMediaSemanal(String userId) {
-        List<Integer> treinosSemana = obterTreinosSemanais(userId);
-        if (treinosSemana.isEmpty()) return 0.0;
+    public EstatisticasDTO obterEstatisticas(String usuarioId) {
+        List<Desempenho> desempenhos = desempenhoRepository.findByUsuarioId(usuarioId);
         
-        int totalTreinos = treinosSemana.stream().mapToInt(Integer::intValue).sum();
-        return (double) totalTreinos / 7;
+        EstatisticasDTO estatisticas = new EstatisticasDTO();
+        estatisticas.setTreinosCompletos(desempenhos.size());
+        estatisticas.setTempoTotalTreino(desempenhos.stream()
+            .mapToInt(Desempenho::getDuracaoMinutos)
+            .sum());
+        estatisticas.setMediaExerciciosPorTreino(desempenhos.stream()
+            .mapToDouble(Desempenho::getExerciciosRealizados)
+            .average()
+            .orElse(0.0));
+        estatisticas.setUltimoTreino(desempenhos.stream()
+            .map(Desempenho::getDataTreino)
+            .max(LocalDateTime::compareTo)
+            .orElse(null));
+            
+        return estatisticas;
     }
-
-    
 }

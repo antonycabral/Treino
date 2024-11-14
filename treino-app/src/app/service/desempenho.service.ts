@@ -1,6 +1,6 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { DesempenhoData } from '../../Models/DesenpenhoData';
 import { TreinoRegistro } from '../../Models/TreinoRegistro';
 
@@ -10,6 +10,7 @@ import { TreinoRegistro } from '../../Models/TreinoRegistro';
 export class DesempenhoService {
 
   private apiUrl = 'http://localhost:8080/api/desempenho';
+  private desempenhoSubject = new BehaviorSubject<DesempenhoData | null>(null);
 
   constructor(private http: HttpClient) { }
 
@@ -24,10 +25,32 @@ export class DesempenhoService {
   }
 
   getDesempenhoUsuario(userId: string): Observable<DesempenhoData> {
-    return this.http.get<DesempenhoData>(`${this.apiUrl}/usuario/${userId}`, this.getHeaders());
+    return this.http.get<DesempenhoData>(`${this.apiUrl}/usuario/${userId}`, this.getHeaders())
+      .pipe(
+        tap(data => this.desempenhoSubject.next(data))
+      );
   }
 
   registrarTreino(treinoData: TreinoRegistro): Observable<void> {
     return this.http.post<void>(`${this.apiUrl}/registrar`, treinoData, this.getHeaders());
+  }
+
+  registrarConclusaoTreino(treinoData: TreinoRegistro): Observable<void> {
+    return this.http.post<void>(`${this.apiUrl}/registrar`, treinoData, this.getHeaders())
+      .pipe(
+        tap(() => {
+          this.getDesempenhoUsuario(treinoData.usuarioId).subscribe();
+        })
+      );
+  }
+
+  obterEstatisticas(usuarioId: string): Observable<any> {
+    const token = localStorage.getItem('token');
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    return this.http.get(`${this.apiUrl}/usuario/${usuarioId}`, { headers });
+  }
+
+  getCurrentDesempenho(): Observable<DesempenhoData | null> {
+    return this.desempenhoSubject.asObservable();
   }
 }

@@ -30,6 +30,7 @@ export class TreinoComponent implements OnInit {
   exercicioForm: FormGroup;
   modal: any;
   historicoExercicio: { [key: string]: any[] } = {};
+  mostrarDesempenho: boolean = false;
 
   constructor(
     private fb: FormBuilder,

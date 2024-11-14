@@ -8,6 +8,7 @@ import { ExercicioHistoricoService } from '../../service/exercicio-historico.ser
 import { SeriesFeedback } from '../../../Models/SeriesFeedback';
 import { AjusteExercicio } from '../../../Models/AjusteExercicio';
 import { ExercicioService } from '../../service/exercicio.service';
+import { TreinoRegistro } from '../../../Models/TreinoRegistro';
 
 
 
@@ -203,27 +204,22 @@ processarFeedback() {
   }
 
   finishTraining() {
-    this.stopTimer();
-    this.stopRestTimer();
-    this.router.navigate(['/home']);
-  }
-
-  private registrarTreinoCompleto() {
-    const userId = localStorage.getItem('userId');
-    if (userId) {
-      const treinoData = {
-        usuarioId: userId,
-        treinoId: this.treino.id,
-        duracaoMinutos: Math.floor(this.elapsedTime / 60),
-        tipoTreino: this.treino.nome
-      };
+    const exerciciosRealizados = this.completedExercises ? this.completedExercises.length : 0;
   
-      this.desempenhoService.registrarTreino(treinoData).subscribe({
-        next: () => console.log('Treino registrado com sucesso'),
-        error: (error) => console.error('Erro ao registrar treino:', error)
-      });
+  const treinoData: TreinoRegistro = {
+    usuarioId: localStorage.getItem('userId') || '',
+    treinoId: this.treino.id,
+    tipoTreino: this.treino.nivel,
+    duracaoMinutos: Math.floor(this.elapsedTime / 60),
+    exerciciosRealizados: exerciciosRealizados
+  };
+
+  this.desempenhoService.registrarTreino(treinoData).subscribe({
+    next: () => {
+      this.router.navigate(['/desempenho']);
     }
-  }
+  });
+}
 
   aceitarAjuste() {
     if (this.ajusteTemporario && this.currentExercise) {
