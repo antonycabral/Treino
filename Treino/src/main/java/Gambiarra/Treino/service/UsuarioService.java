@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import Gambiarra.Treino.Repository.UsuarioRepository;
@@ -11,6 +12,9 @@ import Gambiarra.Treino.model.Usuario;
 
 @Service
 public class UsuarioService {
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Autowired
     private UsuarioRepository usuarioRepository;
@@ -29,20 +33,20 @@ public class UsuarioService {
         return usuarioRepository.findById(id);
     }
 
-    public Usuario atualizarUsuario(String id, Usuario usuarioAtualizado) {
-        Optional<Usuario> usuarioOptional = usuarioRepository.findById(id);
+    public Usuario atualizarUsuario(String id, Usuario usuario) {
+        Usuario usuarioExistente = buscarPorId(id)
+            .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+    
+        usuarioExistente.setNome(usuario.getNome());
+        usuarioExistente.setIdade(usuario.getIdade());
+        usuarioExistente.setPeso(usuario.getPeso());
+        usuarioExistente.setAltura(usuario.getAltura());
         
-        if (usuarioOptional.isPresent()) {
-            Usuario usuario = usuarioOptional.get();
-            usuario.setNome(usuarioAtualizado.getNome());
-            usuario.setEmail(usuarioAtualizado.getEmail());
-            usuario.setPassword(usuarioAtualizado.getPassword());
-            usuario.setPeso(usuarioAtualizado.getPeso());
-            usuario.setAltura(usuarioAtualizado.getAltura());
-            return usuarioRepository.save(usuario);
-        } else {
-            throw new RuntimeException("Usuário não encontrado");
+        if (usuario.getPassword() != null && !usuario.getPassword().isEmpty()) {
+            usuarioExistente.setPassword(passwordEncoder.encode(usuario.getPassword()));
         }
+    
+        return usuarioRepository.save(usuarioExistente);
     }
 
     public void deletarUsuario(String id) {

@@ -33,4 +33,9 @@ public class ExercicioController {
         exercicioService.deletarExercicio(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Exercicio> atualizarExercicio(@PathVariable String id, @RequestBody Exercicio exercicio) {
+        return ResponseEntity.ok(exercicioService.atualizarExercicio(id, exercicio));
+    }
 }

@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
@@ -25,6 +25,13 @@ export class UserService {
       'Authorization': `Bearer ${token}`
     };
     return this.http.get<any>(`${this.apiUrl}/email/${email}`, { headers });
-}
+  }
+
+  atualizarUsuario(userId: string, userData: any): Observable<any> {
+    const token = localStorage.getItem('token');
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    
+    return this.http.put(`${this.apiUrl}/${userId}`, userData, { headers });
+  }
 
 }

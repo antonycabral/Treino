@@ -1,11 +1,13 @@
 package Gambiarra.Treino.model;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -25,6 +27,10 @@ public class Treino {
     private String nome;
     private String descricao;
     private String nivel;
+
+    @Column(name = "data_criacao")
+    private LocalDateTime dataCriacao = LocalDateTime.now();
+
     
     @ManyToOne
     @JoinColumn(name = "usuario_id")
@@ -34,6 +40,7 @@ public class Treino {
     @OneToMany(mappedBy = "treino", cascade = CascadeType.ALL)
     private List<Exercicio> exercicios = new ArrayList<>();
 
+    
     public Treino() {
     }
 
@@ -92,5 +99,13 @@ public class Treino {
     public void addExercicio(Exercicio exercicio) {
         exercicios.add(exercicio);
         exercicio.setTreino(this);
+    }
+
+    public LocalDateTime getDataCriacao() {
+        return dataCriacao;
+    }
+
+    public void setDataCriacao(LocalDateTime dataCriacao) {
+        this.dataCriacao = dataCriacao;
     }
 }
