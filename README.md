@@ -29,3 +29,61 @@ TreinoApp é uma aplicação web desenvolvida em Angular para gerenciamento inte
 - PostgreSQL
 - JWT Authentication
 
+## Diagrama 
+```mermaid
+erDiagram
+    Usuario ||--o{ Treino : possui
+    Usuario ||--o{ Desempenho : registra
+    Treino ||--|{ Exercicio : contem
+    Exercicio ||--o{ ExercicioHistorico : gera
+    
+    Usuario {
+        string id PK
+        string nome
+        string email
+        string password
+        number peso
+        number altura
+        number idade
+    }
+
+    Treino {
+        string id PK
+        string nome
+        string descricao
+        string nivel
+        string usuarioId FK
+    }
+
+    Exercicio {
+        string id PK
+        string nome
+        string descricao
+        number series
+        number repeticoes
+        number carga
+        number tempoDescanso
+        string grupoMuscular
+        string treinoId FK
+    }
+
+    ExercicioHistorico {
+        string id PK
+        string exercicioId FK
+        number cargaUtilizada
+        number repeticoesRealizadas
+        string feedback
+        date dataRegistro
+    }
+
+    Desempenho {
+        string id PK
+        string usuarioId FK
+        number tempoTotalTreino
+        number exerciciosRealizados
+        date dataTreino
+        string treinoId FK
+    }
+
+```
+
